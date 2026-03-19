@@ -1,0 +1,107 @@
+.cart {
+    max-width: 600px; /* Максимальная ширина корзины */
+    margin: 20px auto; /* Центрирование корзины на странице */
+    padding: 20px; /* Отступы внутри корзины */
+    background-color: #ffffff; /* Белый цвет фона */
+    border-radius: 10px; /* Закругленные углы */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Тень для корзины */
+  }
+  
+  .cart h2 {
+    text-align: center; /* Центрирование заголовка */
+    color: #333; /* Темный цвет текста заголовка */
+    margin-bottom: 20px; /* Отступ снизу для заголовка */
+  }
+  
+  .cart-item {
+    display: flex; /* Используем Flexbox для размещения элементов в строку */
+    align-items: center; /* Выравнивание элементов по центру по вертикали */
+    border-bottom: 1px solid #ccc; /* Разделительная линия между элементами корзины */
+    padding: 15px 0; /* Отступы сверху и снизу для элементов корзины */
+  }
+  
+  .cart-item:last-child {
+    border-bottom: none; /* Убираем разделительную линию для последнего элемента */
+  }
+  
+  .cart-item-image {
+    width: 80px; /* Ширина изображения товара */
+    height: 80px; /* Высота изображения товара */
+    object-fit: cover; /* Сохранение пропорций изображения */
+    border-radius: 5px; /* Закругленные углы для изображения */
+    margin-right: 15px; /* Отступ справа для изображения */
+  }
+  
+  .cart-item-details {
+    flex-grow: 1; /* Позволяет этому блоку занимать оставшееся пространство */
+  }
+  
+  .cart-item h3 {
+    margin: 0; /* Убираем отступы для заголовка товара */
+    font-size: 1.2em; /* Увеличенный размер шрифта для названия товара */
+  }
+  
+  .cart-item-description {
+    color: #555; /* Цвет текста описания товара */
+    margin: 5px 0; /* Отступы сверху и снизу для описания товара */
+  }
+  
+  .cart-item-price {
+    font-weight: bold; /* Жирный шрифт для цены товара */
+    color: #e74c3c; /* Цвет текста для цены товара */
+  }
+  
+  .remove-button {
+    background: none; /* Убираем фоновый цвет */
+    border: none; /* Убираем рамку */
+    cursor: pointer; /* Курсор в виде руки при наведении */
+    color: #e74c3c; /* Цвет для кнопки удаления */
+  }
+  
+  .remove-button svg {
+    width: 24px; /* Ширина иконки */
+    height: 24px; /* Высота иконки */
+  }
+  
+  .buy-button {
+    width: 100%; /* Ширина кнопки на всю ширину */
+    padding: 10px; /* Отступы внутри кнопки */
+    border: none; /* Убираем рамку */
+    border-radius: 5px; /* Закругленные углы для кнопки */
+    background-color: #ffc700; /* Цвет фона для кнопки */
+    color: white; /* Цвет текста кнопки */
+    font-size: 16px; /* Размер шрифта для кнопки */
+    cursor: pointer; /* Курсор в виде руки при наведении */
+    transition: background-color 0.3s; /* Плавный переход для фона кнопки */
+  }
+  
+  .buy-button:hover {
+    background-color: #000000; /* Темнее цвет кнопки при наведении */
+  }
+
+  .quantity-control {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.empty-cart-message {
+    text-align: center; /* Центрирование текста */
+    font-size: 18px; /* Размер шрифта для сообщения */
+    margin-top: 20px; /* Отступ сверху */
+}
+
+.quantity-control button {
+    background-color: #eeeeee; /* Цвет кнопок */
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px; /* Увеличенные отступы для кнопок */
+    cursor: pointer;
+    font-size: 18px; /* Увеличенный размер шрифта для кнопок */
+    min-width: 30px; /* Минимальная ширина кнопок */
+}
+
+.quantity-control span {
+    margin: 0 7px; /* Уменьшены отступы вокруг количества */
+    font-size: 16px; /* Размер шрифта для количества */
+}

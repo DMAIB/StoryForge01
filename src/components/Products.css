@@ -1,0 +1,83 @@
+.product-list2 {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content:center;
+}
+
+.product-card {
+    display: flex; /* Используем Flexbox для карточки */
+    flex-direction: column; /* Устанавливаем вертикальное направление */
+    justify-content: space-between; /* Размещаем элементы по вертикали с равными отступами */
+    background-color: #fff; /* Белый фон карточки */
+    border-radius: 10px; /* Увеличенное скругление углов */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Более мягкая тень */
+    margin: 15px; /* Уменьшенное значение отступа между карточками */
+    padding: 15px; /* Уменьшенные отступы внутри карточки */
+    text-align: center;
+    width: 200px; /* Уменьшенная ширина карточки */
+    height: 390px; /* Фиксированная высота карточки для выравнивания */
+    transition: transform 0.2s ease, box-shadow 0.2s ease; /* Плавный эффект при наведении */
+    opacity: 0; /* Начальная непрозрачность для анимации появления */
+    animation: fadeIn 0.5s forwards; /* Анимация появления карточки */
+    margin-bottom: 40px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px); /* Начальная позиция чуть ниже */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0); /* Конечная позиция */
+    }
+}
+
+.product-card:hover {
+    transform: translateY(-5px); /* Поднимаем карточку при наведении */
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Увеличиваем тень при наведении */
+}
+
+.product-image {
+    width: 100%; /* Ширина изображения на всю доступную ширину карточки */
+    height: 150px; /* Фиксированная высота изображения */
+    object-fit: cover; /* Сохранение пропорций изображения при обрезке */
+    border-radius: 8px; /* Скругление углов изображения */
+}
+
+.product-info {
+    display: flex; /* Используем Flexbox для выравнивания цены и описания */
+    flex-direction: column; /* Вертикальное расположение элементов */
+    justify-content: space-between; /* Равномерное распределение пространства */
+    flex-grow: 1; /* Позволяет этому блоку занимать оставшееся пространство */
+}
+
+.product-price {
+    font-size: 1.4em; /* Увеличенный размер шрифта */
+    font-weight: bold; /* Делаем текст жирным */
+    color: #e74c3c; /* Цвет текста цены */
+    margin-bottom: 5px; /* Отступ снизу для отделения от описания */
+}
+
+.product-description {
+    margin-bottom: auto;
+    color: #555; /* Цвет текста описания */
+}
+
+.add-to-cart-button {
+  background-image: linear-gradient(50deg, #ff9d00, #ebd807); /* Градиент для кнопки */
+  color: white; /* Цвет текста */
+  border: none; /* Без границы */
+  border-radius: 5px; /* Закругленные углы */
+  padding: 10px; /* Отступы внутри кнопки */
+  cursor: pointer; /* Курсор при наведении */
+  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; /* Плавный переход для фона и трансформации */
+  width: 100%; /* Ширина кнопки на всю доступную ширину родителя */
+  margin-top: 10px; 
+}
+
+.add-to-cart-button:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Тень при наведении */
+}
+
+

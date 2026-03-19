@@ -1,0 +1,54 @@
+/* components/Profile.css */
+
+.profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 80px;
+    margin-bottom: 135px;
+}
+
+.profile-header {
+    text-align: center; /* Центрируем текст и элементы внутри */
+}
+
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 3px solid #b8b8b8; /* Цвет рамки */
+}
+
+.profile-name {
+    font-size: 24px;
+    margin: 15px 0 5px;
+}
+
+.profile-email,
+.profile-phone {
+    font-size: 16px;
+    color: #666;
+}
+
+.edit-button {
+    display: block; /* Измените на block, чтобы кнопка занимала всю ширину */
+    margin: 30px auto; /* Центрирование с помощью автоматических отступов */
+    padding: 10px 20px;
+    font-size: 16px;
+    color: white;
+    background-color: #ffc700; /* Цвет кнопки */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+
+.edit-button:hover {
+    background-color: #000000; /* Темнее при наведении */
+}
+
+

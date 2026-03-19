@@ -1,0 +1,37 @@
+/* src/components/Header.css */
+body {
+    background-color: #ffffff;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+header {
+    background-color: #ffc700; /* Цвет фона */
+    color: white; /* Цвет текста */
+    padding: 20px; /* Отступы */
+    display: flex; /* Используем flexbox для выравнивания */
+    justify-content: space-between; /* Разделяем элементы по краям */
+    align-items: center; /* Центрируем элементы по вертикали */
+  }
+  
+  h1 {
+    margin: 0; /* Убираем отступы у заголовка */
+    font-size: 2rem; /* Размер шрифта заголовка */
+  }
+  
+  nav {
+    display: flex; /* Используем flexbox для навигации */
+  }
+  
+  nav a {
+    color: white; /* Цвет ссылок */
+    text-decoration: none; /* Убираем подчеркивание */
+    margin-left: 20px; /* Отступ между ссылками */
+    font-size: 1rem; /* Размер шрифта ссылок */
+    transition: color 0.3s ease; /* Плавный переход цвета при наведении */
+  }
+  
+  nav a:hover {
+    color: #000000; /* Цвет ссылки при наведении */
+  }
+  

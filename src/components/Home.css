@@ -1,0 +1,42 @@
+.home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-image: url('3.jpg'); /* Замените на ваш фон */
+    background-size: cover;
+    color: white;
+  }
+  
+  
+  .home {
+    text-align: center; /* Центрируем текст */
+    padding: 20px; /* Добавляем отступы */
+  }
+  
+  .home h1 {
+    font-size: 48px; /* Увеличиваем размер шрифта заголовка */
+    text-transform: uppercase; /* Делаем буквы заглавными */
+    margin-bottom: 10px; /* Отступ снизу */
+  }
+  
+  .home p {
+    font-size: 24px; /* Увеличиваем размер шрифта абзаца */
+    text-transform: uppercase; /* Делаем буквы заглавными */
+    margin-bottom: 20px; /* Отступ снизу */
+  }
+  
+  .button {
+    display: inline-block; /* Делаем ссылку блочным элементом */
+    padding: 10px 20px; /* Добавляем внутренние отступы */
+    background-color: #ffc700; /* Цвет фона кнопки */
+    color: white; /* Цвет текста кнопки */
+    text-decoration: none; /* Убираем подчеркивание */
+    border-radius: 5px; /* Скругляем углы кнопки */
+    font-size: 18px; /* Размер шрифта кнопки */
+  }
+  
+  .button:hover {
+    background-color: #000000; /* Цвет фона кнопки при наведении */
+  }

@@ -1,0 +1,133 @@
+.admin-panel-container {
+  display: flex; /* Используем Flexbox для размещения элементов */
+  max-width: 1200px; /* Максимальная ширина контейнера */
+  margin: 20px auto; /* Центрируем контейнер на странице */
+}
+
+.admin-panel {
+  flex: 1; /* Занимает оставшееся пространство */
+  max-width: 350px; /* Уменьшенная максимальная ширина админ-панели */
+  margin-right: 20px; /* Отступ справа для разделения с продуктами */
+  padding: 20px; /* Отступы внутри панели */
+  background-color: #ffffff; /* Белый цвет фона для панели */
+  border-radius: 10px; /* Закругленные углы для панели */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Более выраженная тень для панели */
+}
+
+.admin-panel h2 {
+  text-align: center; /* Центрирование заголовка */
+  color: #333; /* Темный цвет текста заголовка */
+  margin-bottom: 1.5rem; /* Отступ снизу для заголовка */
+}
+
+.admin-panel form {
+  display: flex; /* Использует flexbox для размещения элементов формы */
+  flex-direction: column; /* Вертикальное направление для элементов формы */
+}
+
+.admin-panel input {
+  margin-bottom: 1rem; /* Отступы между полями ввода */
+  padding: 0.75rem; /* Отступы внутри полей ввода */
+  border: 1px solid #ccc; /* Светлая рамка вокруг полей ввода */
+  border-radius: 4px; /* Закругленные углы для полей ввода */
+  font-size: 16px; /* Размер шрифта */
+  transition: border-color 0.3s; /* Плавный переход для цвета рамки */
+}
+
+.admin-panel input:focus {
+  border-color: #ffc700; /* Изменение цвета рамки при фокусе */
+  outline: none; /* Убирает стандартное выделение */
+}
+
+.admin-panel button {
+  padding: 0.75rem; /* Отступы внутри кнопки */
+  border: none; /* Убирает рамку кнопки */
+  border-radius: 4px; /* Закругленные углы кнопки */
+  background-color: #ffc700; /* Желтый цвет для кнопки */
+  color: white; /* Цвет текста кнопки */
+  font-size: 16px; /* Размер шрифта для кнопки */
+  cursor: pointer; /* Курсор в виде руки при наведении */
+  transition: background-color 0.3s, transform 0.3s; /* Плавный переход для фона и трансформации */
+}
+
+.admin-panel button:hover {
+  background-color: #daaf06; /* Темнее цвет кнопки при наведении */
+}
+
+.product-list-container {
+  max-width: max-content;
+  flex: 2; /* Занимает больше пространства по сравнению с админ-панелью */
+  padding: 20px; /* Отступы внутри контейнера списка продуктов */
+  background-color: #ffffff; /* Белый цвет фона для контейнера */
+  border-radius: 10px; /* Закругленные углы для контейнера */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Более выраженная тень для контейнера */
+}
+
+.product-list {
+  display: flex; /* Использует flexbox для размещения карточек продуктов */
+  flex-wrap: wrap; /* Позволяет карточкам переноситься на новую строку */
+  justify-content: flex-start; /* Выравнивание карточек по левому краю */
+  width: 800px;
+}
+
+.product-card2 {
+  display: flex; /* Используем Flexbox для карточки */
+  flex-direction: column; /* Устанавливаем вертикальное направление */
+  justify-content: space-between; /* Размещаем элементы по вертикали с равными отступами */
+  background-color: #fff; /* Белый фон карточки */
+  border-radius: 10px; /* Увеличенное скругление углов */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Более мягкая тень */
+  margin: 15px; /* Уменьшенное значение отступа между карточками */
+  padding: 15px; /* Уменьшенные отступы внутри карточки */
+  text-align: center;
+  width: 200px; /* Уменьшенная ширина карточки */
+  height: 450px; /* Фиксированная высота карточки для выравнивания */
+  transition: transform 0.2s ease, box-shadow 0.2s ease; /* Плавный эффект при наведении */
+}
+
+.product-card:hover {
+  transform: translateY(-5px); /* Поднимаем карточку при наведении */
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2); /* Увеличиваем тень при наведении */
+}
+
+.product-image {
+  width: 100%; /* Ширина изображения на всю доступную ширину карточки */
+  height: 150px; /* Фиксированная высота изображения */
+  object-fit: cover; /* Сохранение пропорций изображения при обрезке */
+  border-radius: 8px; /* Скругление углов изображения */
+}
+
+.product-info {
+  display: flex; /* Используем Flexbox для выравнивания цены и описания */
+  flex-direction: column; /* Вертикальное расположение элементов */
+  justify-content: space-between; /* Равномерное распределение пространства */
+  flex-grow: 1; /* Позволяет этому блоку занимать оставшееся пространство */
+}
+
+.product-price {
+  font-size: 1.4em; /* Увеличенный размер шрифта */
+  font-weight: bold; /* Делаем текст жирным */
+  color: #e74c3c; /* Цвет текста цены */
+  margin-bottom: 5px; /* Отступ снизу для отделения от описания */
+}
+
+.product-description {
+  margin-bottom: auto;
+  color: #555; /* Цвет текста описания */
+}
+
+.add-to-cart-button2 {
+  background-image: linear-gradient(50deg, #ff9d00, #ebd807); /* Градиент для кнопки */
+  color: white; /* Цвет текста */
+  border: none; /* Без границы */
+  border-radius: 5px; /* Закругленные углы */
+  padding: 10px; /* Отступы внутри кнопки */
+  cursor: pointer; /* Курсор при наведении */
+  transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s; /* Плавный переход для фона и трансформации */
+  width: 100%; /* Ширина кнопки на всю доступную ширину родителя */
+  margin-top: 10px; /* Уменьшено расстояние между кнопками */
+}
+
+.add-to-cart-button2:hover {
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Тень при наведении */
+}
