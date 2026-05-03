@@ -7,8 +7,21 @@ switch($method) {
     case 'GET':
         // Получение корзины пользователя
         $user_id = $_GET['user_id'] ?? null;
+        $product_id = $_GET['product_id'] ?? null;
         
-        if ($user_id) {
+        if ($user_id && $product_id) {
+            // Проверка конкретного товара в корзине
+            $stmt = $pdo->prepare("
+                SELECT c.*, p.name, p.price, p.description, p.imageUrl 
+                FROM cart c 
+                JOIN products p ON c.product_id = p.id 
+                WHERE c.user_id = ? AND c.product_id = ?
+            ");
+            $stmt->execute([$user_id, $product_id]);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            echo json_encode($result);
+        } else if ($user_id) {
+            // Получение всей корзины пользователя
             $stmt = $pdo->prepare("
                 SELECT c.*, p.name, p.price, p.description, p.imageUrl 
                 FROM cart c 

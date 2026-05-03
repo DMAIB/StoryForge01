@@ -7,7 +7,8 @@ $email = $data['email'];
 $password = $data['password'];
 
 try {
-    $stmt = $pdo->prepare("SELECT id, name, email, phone, password FROM users WHERE email = ?");
+    // Добавили address, photo в SELECT
+    $stmt = $pdo->prepare("SELECT id, name, email, phone, address, photo, role, password FROM users WHERE email = ?");
     $stmt->execute([$email]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);
     

@@ -1,0 +1,606 @@
+.cart {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.cart h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 24px;
+    font-weight: 600;
+}
+
+.cart-item {
+    display: flex;
+    align-items: flex-start;
+    border-bottom: 1px solid #eee;
+    padding: 16px 0;
+    transition: background-color 0.2s;
+}
+
+.cart-item:hover {
+    background-color: #fafafa;
+}
+
+.cart-item:last-child {
+    border-bottom: none;
+}
+
+.cart-item-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-right: 20px;
+}
+
+.cart-item-details {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.cart-item h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.2em;
+    font-weight: 500;
+    text-align: left;
+}
+
+.cart-item-description {
+    color: #666;
+    margin: 5px 0;
+    font-size: 0.9em;
+    text-align: left;
+}
+
+.cart-item-price {
+    font-weight: 600;
+    color: #ff6b35;
+    text-align: left;
+}
+
+.remove-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #ff6b35;
+    padding: 8px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: flex-start;
+}
+
+.remove-button:hover {
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+.remove-button svg {
+    width: 22px;
+    height: 22px;
+}
+
+.buy-button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: #ffc700;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 8px;
+}
+
+.buy-button:hover {
+    background-color: #e5b300;
+    transform: scale(1.01);
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+    gap: 4px;
+}
+
+.empty-cart-message {
+    text-align: center;
+    font-size: 18px;
+    color: #888;
+    margin-top: 32px;
+    padding: 20px;
+}
+
+.quantity-control button {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+    min-width: 36px;
+    transition: background-color 0.2s;
+}
+
+.quantity-control button:hover {
+    background-color: #e0e0e0;
+}
+
+.quantity-control span {
+    margin: 0 8px;
+    font-size: 16px;
+    font-weight: 500;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* Модальное окно */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideIn 0.3s ease;
+}
+
+.modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.3s;
+}
+
+.modal-close:hover {
+    color: #333;
+}
+
+/* Информация о пользователе */
+.user-info-summary {
+    background: #e3f2fd;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 15px 0;
+}
+
+.user-info-summary h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #1976d2;
+    font-size: 16px;
+}
+
+.user-info-summary p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+/* Сумма к оплате */
+.payment-summary {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: center;
+    font-size: 16px;
+}
+
+.payment-summary strong {
+    color: #ff6b35;
+    font-size: 18px;
+}
+
+/* Секция адреса (упрощенная версия) */
+.address-section {
+    margin: 20px 0;
+}
+
+.section-label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 12px;
+    color: #333;
+    font-size: 16px;
+}
+
+.saved-address-info {
+    background: #e8f5e9;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    border-left: 3px solid #4caf50;
+}
+
+.saved-address-info strong {
+    color: #2e7d32;
+}
+
+.address-hint {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    font-style: italic;
+}
+
+.new-address-form {
+    margin-top: 10px;
+}
+
+.new-address-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #333;
+    font-size: 14px;
+}
+
+.address-textarea {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: vertical;
+    font-family: inherit;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.address-textarea:focus {
+    outline: none;
+    border-color: #ffc700;
+}
+
+.use-saved-address-btn {
+    width: 100%;
+    padding: 10px;
+    background: #f0f0f0;
+    color: #555;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s;
+}
+
+.use-saved-address-btn:hover {
+    background: #e0e0e0;
+    color: #333;
+}
+
+/* Способы оплаты */
+.payment-methods {
+    margin: 20px 0;
+}
+
+.payment-method {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin: 8px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: white;
+}
+
+.payment-method:hover {
+    background: #f8f9fa;
+    border-color: #ffc700;
+}
+
+.payment-method input {
+    margin-right: 10px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* Детали карты */
+.card-details {
+    margin: 20px 0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 500;
+    color: #333;
+}
+
+.form-group input,
+.payment-select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+
+.form-group input:focus,
+.payment-select:focus {
+    outline: none;
+    border-color: #ffc700;
+}
+
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* Онлайн оплата и наличные */
+.online-payment,
+.cash-payment {
+    margin: 20px 0;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+}
+
+.online-payment p,
+.cash-payment p {
+    margin: 0;
+    color: #666;
+}
+
+.payment-select {
+    margin-top: 10px;
+}
+
+/* Кнопка подтверждения */
+.confirm-payment-btn {
+    width: 100%;
+    padding: 14px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    margin-top: 20px;
+}
+
+.confirm-payment-btn:hover {
+    background: #218838;
+}
+
+.confirm-payment-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Итоговая сумма */
+.total-price {
+    text-align: right;
+    margin: 20px 0;
+    padding-top: 5px;
+}
+
+.total-price h3 {
+    color: #ff6b35;
+    font-size: 1.3em;
+    margin: 0;
+}
+
+/* Анимации */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+    .cart {
+        padding: 15px;
+        margin: 10px;
+    }
+    
+    .cart-item {
+        flex-wrap: wrap;
+    }
+    
+    .cart-item-image {
+        width: 80px;
+        height: 80px;
+        margin-right: 15px;
+    }
+    
+    .cart-item-details {
+        flex: 1;
+    }
+    
+    .remove-button {
+        align-self: flex-start;
+    }
+    
+    .modal-content {
+        padding: 20px;
+        max-height: 90vh;
+    }
+    
+    .form-row {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .user-info-summary {
+        padding: 12px;
+    }
+    
+    .saved-address-info {
+        padding: 10px;
+        font-size: 13px;
+    }
+}
+
+/* Стили для скролла */
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Cart.css - добавьте эти стили */
+
+/* Чекбоксы для выбора товаров */
+.item-checkbox {
+  width: 22px;
+  height: 22px;
+  margin-right: 20px;
+  cursor: pointer;
+  accent-color: #ff6b35;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.cart-item.selected {
+  background: rgba(255, 107, 53, 0.05);
+  border-left: 3px solid #ff6b35;
+}
+
+/* Панель управления выделением */
+.selection-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 15px 20px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.select-all-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.select-all-checkbox input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.selected-count {
+  color: #666;
+  font-size: 14px;
+}
+
+.clear-selected-btn {
+  background: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.3s;
+}
+
+.clear-selected-btn:hover {
+  background: #c82333;
+}
+
+.partial-selection-note {
+  font-size: 14px;
+  color: #ff6b35;
+  font-weight: normal;
+  margin-left: 10px;
+}
+
+.select-items-warning {
+  color: #ff6b35;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.buy-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}

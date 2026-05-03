@@ -1,0 +1,308 @@
+.my-orders {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  min-height: calc(100vh - 200px);
+}
+
+.my-orders h2 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 2rem;
+  border-bottom: 3px solid #ffc700;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+}
+
+/* Список заказов */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Карточка заказа */
+.order-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: box-shadow 0.3s ease;
+}
+
+.order-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+/* Заголовок заказа (кликабельный) */
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  background: #fafafa;
+  transition: background 0.2s ease;
+}
+
+.order-header:hover {
+  background: #f5f5f5;
+}
+
+.order-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.order-number {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.order-date {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.order-summary {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.order-total {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #2c3e50;
+}
+
+.order-status {
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.status-pending {
+  background: #fff3e0;
+  color: #e67e22;
+}
+
+.status-processing {
+  background: #e3f2fd;
+  color: #2196f3;
+}
+
+.status-shipped {
+  background: #e8f5e9;
+  color: #4caf50;
+}
+
+.status-delivered {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-cancelled {
+  background: #ffebee;
+  color: #f44336;
+}
+
+.expand-icon {
+  font-size: 0.9rem;
+  color: #999;
+  transition: transform 0.2s ease;
+}
+
+/* Детали заказа */
+.order-details {
+  padding: 1.5rem;
+  border-top: 1px solid #eee;
+  background: white;
+}
+
+.delivery-info,
+.payment-info {
+  margin-bottom: 1.5rem;
+}
+
+.delivery-info h4,
+.payment-info h4,
+.order-items h4 {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.delivery-info p,
+.payment-info p {
+  color: #666;
+  line-height: 1.5;
+  text-align: start;
+}
+
+/* Таблица товаров */
+.order-items {
+  margin-top: 1rem;
+}
+
+.items-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+.items-table th,
+.items-table td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.items-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.items-table td {
+  color: #666;
+}
+
+.items-table tfoot tr {
+  background: #f8f9fa;
+}
+
+.items-table tfoot td {
+  padding: 0.75rem;
+  font-weight: 600;
+  border-bottom: none;
+}
+
+.total-label {
+  text-align: right;
+  font-weight: 600;
+  color: #333;
+}
+
+.total-value {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #2c3e50;
+}
+
+/* Пустое состояние */
+.no-orders {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.no-orders p {
+  font-size: 1.1rem;
+  color: #888;
+  margin-bottom: 1.5rem;
+}
+
+.continue-shopping-btn {
+  display: inline-block;
+  background: #4a90e2;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.continue-shopping-btn:hover {
+  background: #357abd;
+}
+
+/* Не авторизован */
+.not-logged-in {
+  text-align: center;
+  padding: 3rem;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.not-logged-in h2 {
+  border-bottom: none;
+  margin-bottom: 1rem;
+}
+
+.not-logged-in a {
+  color: #4a90e2;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.not-logged-in a:hover {
+  text-decoration: underline;
+}
+
+/* Загрузка */
+.loading-spinner {
+  text-align: center;
+  padding: 3rem;
+  color: #888;
+  font-size: 1.1rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .order-summary {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .order-info {
+    width: 100%;
+  }
+
+  .items-table th,
+  .items-table td {
+    padding: 0.5rem;
+    font-size: 0.85rem;
+  }
+
+  .order-total {
+    font-size: 1rem;
+  }
+}
+
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  background: #ffebee;
+  border-radius: 12px;
+  color: #c62828;
+}
+
+.retry-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.retry-btn:hover {
+  background: #357abd;
+}
