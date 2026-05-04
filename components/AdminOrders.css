@@ -230,26 +230,54 @@
   font-size: 0.85rem;
 }
 
-.delivery-info,
-.payment-info {
+/* Объединенный блок доставки и оплаты */
+.delivery-payment-block {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
   margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.delivery-info h4,
-.payment-info h4,
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.info-icon {
+  font-size: 1.2rem;
+  width: 30px;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #555;
+  min-width: 140px;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: #333;
+  flex: 1;
+  line-height: 1.4;
+}
+
+/* Таблица товаров */
+.order-items {
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+
 .order-items h4 {
   font-size: 1rem;
   color: #555;
   margin-bottom: 0.5rem;
 }
 
-.delivery-info p,
-.payment-info p {
-  color: #666;
-  line-height: 1.5;
-}
-
-/* Таблица товаров */
 .items-table {
   width: 100%;
   border-collapse: collapse;
@@ -258,8 +286,7 @@
 
 .items-table th,
 .items-table td {
-  padding: 0.75rem;
-  text-align: left;
+  padding: 12px 8px;
   border-bottom: 1px solid #eee;
 }
 
@@ -267,21 +294,94 @@
   background: #f8f9fa;
   font-weight: 600;
   color: #555;
+  font-size: 0.9rem;
 }
 
-.items-table tfoot tr {
+.items-table td {
+  color: #333;
+}
+
+/* Фиксированная ширина колонок */
+.items-table th:first-child,
+.items-table td:first-child {
+  width: 45%;
+  text-align: left;
+}
+
+.items-table th:nth-child(2),
+.items-table td:nth-child(2) {
+  width: 20%;
+  text-align: right;
+}
+
+.items-table th:nth-child(3),
+.items-table td:nth-child(3) {
+  width: 15%;
+  text-align: right;
+}
+
+.items-table th:last-child,
+.items-table td:last-child {
+  width: 20%;
+  text-align: right;
+}
+
+/* Стили для ячеек */
+.price-cell,
+.quantity-cell,
+.total-cell {
+  text-align: right;
+}
+
+/* Строка доставки */
+.delivery-item-row {
   background: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
+}
+
+.delivery-item-row td {
+  padding: 12px 8px;
+}
+
+.delivery-name {
+  font-weight: 600;
+  color: #ff6b35;
+  text-align: left;
+}
+
+.delivery-price-cell,
+.delivery-quantity,
+.delivery-total {
+  text-align: right;
+}
+
+.delivery-total {
+  font-weight: 600;
+  color: #ff6b35;
+}
+
+/* Итоговая строка */
+.items-table tfoot tr {
+  border-top: 2px solid #e0e0e0;
+  background: #fafafa;
+}
+
+.items-table tfoot td {
+  padding: 12px 8px;
 }
 
 .total-label {
-  text-align: right;
   font-weight: 600;
+  color: #333;
+  text-align: right;
+  font-size: 1rem;
 }
 
 .total-value {
   font-weight: 700;
   font-size: 1.1rem;
   color: #2c3e50;
+  text-align: right;
 }
 
 /* Пустое состояние */
@@ -319,6 +419,52 @@
   line-height: 1.5;
 }
 
+.access-denied a {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: #ffc700;
+  color: #333;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.access-denied a:hover {
+  background: #e6b300;
+}
+
+/* Загрузка и ошибки */
+.loading-spinner {
+  text-align: center;
+  padding: 3rem;
+  color: #888;
+  font-size: 1.1rem;
+}
+
+.error-message {
+  text-align: center;
+  padding: 2rem;
+  background: #ffebee;
+  border-radius: 12px;
+  color: #c62828;
+}
+
+.retry-btn {
+  margin-top: 1rem;
+  padding: 0.5rem 1.5rem;
+  background: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.retry-btn:hover {
+  background: #357abd;
+}
+
 /* Адаптивность */
 @media (max-width: 768px) {
   .order-header {
@@ -343,5 +489,26 @@
   .filter-group select,
   .filter-group input {
     width: 100%;
+  }
+  
+  .items-table th,
+  .items-table td {
+    padding: 8px 4px;
+    font-size: 0.8rem;
+  }
+  
+  .total-value {
+    font-size: 1rem;
+  }
+  
+  /* Адаптивность для блока доставки */
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .info-label {
+    min-width: auto;
   }
 }

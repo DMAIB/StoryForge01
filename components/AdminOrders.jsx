@@ -56,7 +56,6 @@ const AdminOrders = () => {
       const data = await response.json();
       
       if (data.success) {
-        // Обновляем статус в локальном состоянии
         setOrders(orders.map(order => 
           order.id === orderId ? { ...order, status: newStatus } : order
         ));
@@ -111,7 +110,6 @@ const AdminOrders = () => {
     ];
   };
 
-  // Фильтрация заказов
   const filteredOrders = orders.filter(order => {
     const matchesStatus = filterStatus === 'all' || order.status === filterStatus;
     const matchesSearch = searchTerm === '' || 
@@ -121,7 +119,6 @@ const AdminOrders = () => {
     return matchesStatus && matchesSearch;
   });
 
-  // Статистика
   const stats = {
     total: orders.length,
     pending: orders.filter(o => o.status === 'pending').length,
@@ -168,7 +165,6 @@ const AdminOrders = () => {
     <div className="admin-orders">
       <h2>📋 Управление заказами</h2>
       
-      {/* Статистика */}
       <div className="stats-container">
         <div className="stat-card total">
           <span className="stat-value">{stats.total}</span>
@@ -196,7 +192,6 @@ const AdminOrders = () => {
         </div>
       </div>
 
-      {/* Фильтры */}
       <div className="filters">
         <div className="filter-group">
           <label>Статус:</label>
@@ -223,7 +218,6 @@ const AdminOrders = () => {
         <button onClick={fetchOrders} className="refresh-btn">🔄 Обновить</button>
       </div>
 
-      {/* Список заказов */}
       {filteredOrders.length === 0 ? (
         <div className="no-orders">
           <p>Заказы не найдены</p>
@@ -231,7 +225,7 @@ const AdminOrders = () => {
       ) : (
         <div className="orders-list">
           {filteredOrders.map((order) => (
-            <div key={order.id} className="order-card">
+            <div key={order.id} className={`order-card ${order.status === 'cancelled' ? 'cancelled-order' : ''}`}>
               <div className="order-header" onClick={() => toggleOrderDetails(order.id)}>
                 <div className="order-info">
                   <span className="order-number">Заказ #{order.order_number}</span>
@@ -253,7 +247,6 @@ const AdminOrders = () => {
               
               {expandedOrderId === order.id && (
                 <div className="order-details">
-                  {/* Изменение статуса */}
                   <div className="status-update">
                     <label>Изменить статус:</label>
                     <select 
@@ -270,18 +263,30 @@ const AdminOrders = () => {
                     {updatingStatus === order.id && <span className="updating">Обновление...</span>}
                   </div>
 
-                  <div className="delivery-info">
-                    <h4>📍 Адрес доставки</h4>
-                    <p>{order.delivery_address}</p>
-                  </div>
-                  
-                  <div className="payment-info">
-                    <h4>💳 Способ оплаты</h4>
-                    <p>
-                      {order.payment_method === 'card' && 'Банковская карта'}
-                      {order.payment_method === 'cash' && 'Наличные при получении'}
-                      {order.payment_method === 'online' && 'Онлайн-кошелек'}
-                    </p>
+                  {/* Информация об отмене, если заказ отменен */}
+                  {order.status === 'cancelled' && (
+                    <div className="admin-cancelled-info">
+                      <span className="cancelled-icon">⚠️</span>
+                      <span className="cancelled-text">Заказ был отменен пользователем</span>
+                    </div>
+                  )}
+
+                  {/* Объединенный блок информации о доставке и оплате */}
+                  <div className="delivery-payment-block">
+                    <div className="info-row">
+                      <span className="info-icon">📍</span>
+                      <span className="info-label">Адрес доставки:</span>
+                      <span className="info-value">{order.delivery_address}</span>
+                    </div>
+                    <div className="info-row">
+                      <span className="info-icon">💳</span>
+                      <span className="info-label">Способ оплаты:</span>
+                      <span className="info-value">
+                        {order.payment_method === 'card' && 'Банковская карта'}
+                        {order.payment_method === 'cash' && 'Наличные при получении'}
+                        {order.payment_method === 'online' && 'Онлайн-кошелек'}
+                      </span>
+                    </div>
                   </div>
                   
                   <div className="order-items">
@@ -297,20 +302,35 @@ const AdminOrders = () => {
                       </thead>
                       <tbody>
                         {order.items && order.items.map((item, index) => {
-                          const priceNum = parseInt(item.product_price.replace(/[^0-9.-]+/g, ''));
-                          const total = priceNum * item.quantity;
+                          // Правильное получение цены
+                          let priceNum = 0;
+                          if (typeof item.product_price === 'string') {
+                            priceNum = parseFloat(item.product_price.replace(/[^\d.-]/g, ''));
+                          } else {
+                            priceNum = parseFloat(item.product_price);
+                          }
+                          
+                          const total = (priceNum || 0) * (item.quantity || 0);
+                          
                           return (
                             <tr key={index}>
-                              <td>{item.product_name}</td>
-                              <td>{item.product_price}</td>
-                              <td>{item.quantity}</td>
-                              <td>{total.toLocaleString()} ₽</td>
+                              <td className="product-name">{item.product_name}</td>
+                              <td className="price-cell">{priceNum.toLocaleString()} ₽</td>
+                              <td className="quantity-cell">{item.quantity}</td>
+                              <td className="total-cell">{total.toLocaleString()} ₽</td>
                             </tr>
                           );
                         })}
+                        {/* Доставка как отдельная строка в теле таблицы */}
+                        <tr className="delivery-item-row">
+                          <td className="delivery-name">Доставка</td>
+                          <td className="delivery-price-cell">{Number(order.delivery_price || 0).toLocaleString()} ₽</td>
+                          <td className="delivery-quantity">1</td>
+                          <td className="delivery-total">{Number(order.delivery_price || 0).toLocaleString()} ₽</td>
+                        </tr>
                       </tbody>
                       <tfoot>
-                        <tr>
+                        <tr className="total-row">
                           <td colSpan="3" className="total-label">Итого:</td>
                           <td className="total-value">{Number(order.total_price).toLocaleString()} ₽</td>
                         </tr>

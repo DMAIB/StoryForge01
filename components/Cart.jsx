@@ -6,12 +6,25 @@ import ProductImage from './ProductImage';
 import './Cart.css';
 
 const Cart = () => {
-  const { cartItems, removeFromCart, clearCart, updateCartItemQuantity } = useCart();
+  const { cartItems, removeFromCart, clearCart, updateCartItemQuantity, refreshCart } = useCart();
   const { user, updateUser } = useContext(UserContext);
   const navigate = useNavigate();
   const location = useLocation();
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [orderSuccessData, setOrderSuccessData] = useState({
+    orderNumber: '',
+    subtotal: 0,
+    delivery: 0,
+    total: 0,
+    address: ''
+  });
+  
+  // Состояния для диалогов подтверждения
+  const [showClearCartConfirm, setShowClearCartConfirm] = useState(false);
+  const [showRemoveItemConfirm, setShowRemoveItemConfirm] = useState(false);
+  const [itemToRemove, setItemToRemove] = useState(null);
   
   // Состояния для оплаты
   const [paymentMethod, setPaymentMethod] = useState('card');
@@ -27,21 +40,57 @@ const Cart = () => {
   // Состояние для выбранных товаров
   const [selectedItems, setSelectedItems] = useState(new Set());
   
+  // Константы для доставки
+  const FREE_DELIVERY_THRESHOLD = 3000;
+  const REDUCED_DELIVERY_THRESHOLD = 1500;
+  const STANDARD_DELIVERY_PRICE = 500;
+  const REDUCED_DELIVERY_PRICE = 250;
+  
   // Используем useRef чтобы отследить состояние
   const buyNowAppliedRef = useRef(false);
   const buyNowProductIdRef = useRef(null);
-  const manualSelectionRef = useRef(false); // Флаг для ручного снятия/выделения
+  const manualSelectionRef = useRef(false);
 
   // Заглушка для фото (локальная)
   const NO_IMAGE_URL = '/images/no-image.png';
 
-  // При монтировании - сохраняем ID из localStorage, но НЕ ОЧИЩАЕМ его
+  // Функция для расчета стоимости доставки
+  const getDeliveryPrice = () => {
+    const subtotal = getSelectedTotalPrice();
+    if (subtotal >= FREE_DELIVERY_THRESHOLD) return 0;
+    if (subtotal >= REDUCED_DELIVERY_THRESHOLD) return REDUCED_DELIVERY_PRICE;
+    return STANDARD_DELIVERY_PRICE;
+  };
+
+  // Функция для получения общей суммы с доставкой
+  const getTotalWithDelivery = () => {
+    return getSelectedTotalPrice() + getDeliveryPrice();
+  };
+
+  // Проверка и обновление корзины при неполных данных
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      const hasInvalidItems = cartItems.some(item => 
+        !item.name || 
+        item.name === 'Товар' || 
+        !item.price || 
+        item.price === '0 ₽' ||
+        item.price === '0₽'
+      );
+      
+      if (hasInvalidItems && refreshCart) {
+        console.log('Обнаружены некорректные данные в корзине, обновляем...');
+        refreshCart();
+      }
+    }
+  }, [cartItems, refreshCart]);
+
+  // При монтировании - сохраняем ID из localStorage
   useEffect(() => {
     const buyNowId = localStorage.getItem('buyNowProductId');
     console.log('Cart mounted, buyNowProductId from localStorage:', buyNowId);
     if (buyNowId) {
       buyNowProductIdRef.current = parseInt(buyNowId);
-      // НЕ удаляем localStorage здесь! Удалим только после применения выделения
     }
   }, []);
 
@@ -59,21 +108,36 @@ const Cart = () => {
     }
   };
 
-  // Обертка для удаления товара
-  const handleRemoveFromCart = (itemId) => {
-    const newSelected = new Set(selectedItems);
-    newSelected.delete(itemId);
-    setSelectedItems(newSelected);
-    removeFromCart(itemId);
-    // Если пользователь удалил товар, отмечаем что было ручное действие
-    manualSelectionRef.current = true;
+  // Функция для подтверждения удаления товара
+  const confirmRemoveItem = (itemId) => {
+    setItemToRemove(itemId);
+    setShowRemoveItemConfirm(true);
   };
 
-  // Обертка для очистки корзины
+  // Функция для выполнения удаления товара
+  const handleRemoveFromCart = () => {
+    if (itemToRemove) {
+      const newSelected = new Set(selectedItems);
+      newSelected.delete(itemToRemove);
+      setSelectedItems(newSelected);
+      removeFromCart(itemToRemove);
+      manualSelectionRef.current = true;
+      setShowRemoveItemConfirm(false);
+      setItemToRemove(null);
+    }
+  };
+
+  // Функция для подтверждения очистки корзины
+  const confirmClearCart = () => {
+    setShowClearCartConfirm(true);
+  };
+
+  // Функция для выполнения очистки корзины
   const handleClearCart = () => {
     setSelectedItems(new Set());
     clearCart();
     manualSelectionRef.current = true;
+    setShowClearCartConfirm(false);
   };
 
   // Выделить все товары
@@ -81,13 +145,13 @@ const Cart = () => {
     cleanSelectedItems();
     const newSelected = new Set(cartItems.map(item => item.id));
     setSelectedItems(newSelected);
-    manualSelectionRef.current = true; // Отмечаем, что пользователь выбрал вручную
+    manualSelectionRef.current = true;
   };
 
   // Снять выделение со всех товаров
   const deselectAllItems = () => {
     setSelectedItems(new Set());
-    manualSelectionRef.current = true; // Отмечаем, что пользователь снял выделение вручную
+    manualSelectionRef.current = true;
   };
 
   // Переключить выделение товара
@@ -99,7 +163,7 @@ const Cart = () => {
       newSelected.add(itemId);
     }
     setSelectedItems(newSelected);
-    manualSelectionRef.current = true; // Отмечаем, что пользователь менял выделение
+    manualSelectionRef.current = true;
   };
 
   // Проверить, выделены ли все товары
@@ -135,14 +199,6 @@ const Cart = () => {
 
   // Основная логика выделения товаров
   useEffect(() => {
-    console.log('=== Cart selection effect ===');
-    console.log('cartItems length:', cartItems.length);
-    console.log('buyNowAppliedRef.current:', buyNowAppliedRef.current);
-    console.log('buyNowProductIdRef.current:', buyNowProductIdRef.current);
-    console.log('selectedItems.size:', selectedItems.size);
-    console.log('manualSelectionRef.current:', manualSelectionRef.current);
-    
-    // Если корзина пуста, сбрасываем флаги
     if (cartItems.length === 0) {
       buyNowAppliedRef.current = false;
       buyNowProductIdRef.current = null;
@@ -150,10 +206,7 @@ const Cart = () => {
       return;
     }
     
-    // Если есть buyNow ID и мы еще не применили выделение
     if (buyNowProductIdRef.current !== null && !buyNowAppliedRef.current) {
-      console.log('Applying buyNow selection for product ID:', buyNowProductIdRef.current);
-      
       const targetItem = cartItems.find(item => item.id === buyNowProductIdRef.current);
       
       if (targetItem) {
@@ -161,26 +214,16 @@ const Cart = () => {
         newSelected.add(targetItem.id);
         setSelectedItems(newSelected);
         buyNowAppliedRef.current = true;
-        console.log('Selected only:', targetItem.name);
-        
-        // ТЕПЕРЬ можно очистить localStorage
         localStorage.removeItem('buyNowProductId');
-        console.log('Cleared localStorage');
-      } else {
-        console.log('Target product not found in cart yet, waiting...');
       }
       return;
     }
     
-    // Если пользователь вручную менял выделение - НЕ трогаем
     if (manualSelectionRef.current) {
-      console.log('Manual selection was made, skipping auto selection');
       return;
     }
     
-    // Если buyNow не активен, выделяем все (только если ничего не выбрано)
     if (!buyNowAppliedRef.current && selectedItems.size === 0 && cartItems.length > 0) {
-      console.log('No buyNow, selecting all items');
       const newSelected = new Set(cartItems.map(item => item.id));
       setSelectedItems(newSelected);
     }
@@ -206,6 +249,100 @@ const Cart = () => {
     setDeliveryAddressFull(e.target.value);
   };
 
+  // Компонент модального окна подтверждения
+  const ConfirmDialog = ({ isOpen, onClose, onConfirm, title, message, confirmText = "Да", cancelText = "Нет" }) => {
+    if (!isOpen) return null;
+    
+    return (
+      <div className="modal-overlay confirm-dialog-overlay" onClick={onClose}>
+        <div className="modal-content confirm-dialog-content" onClick={(e) => e.stopPropagation()}>
+          <h3>{title}</h3>
+          <p>{message}</p>
+          <div className="confirm-dialog-buttons">
+            <button className="confirm-dialog-btn cancel" onClick={onClose}>
+              {cancelText}
+            </button>
+            <button className="confirm-dialog-btn confirm" onClick={onConfirm}>
+              {confirmText}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Компонент модального окна успеха
+  const SuccessModal = ({ isOpen, onClose, orderData }) => {
+    if (!isOpen) return null;
+
+    return (
+      <div className="modal-overlay success-modal-overlay" onClick={onClose}>
+        <div className="modal-content success-modal-content" onClick={(e) => e.stopPropagation()}>
+          <button className="modal-close" onClick={onClose}>✕</button>
+          
+          <div className="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" 
+                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </div>
+
+          <h2 className="success-title">✓ Заказ успешно оформлен!</h2>
+          
+          <div className="order-details">
+            <div className="order-detail-row">
+              <span className="detail-label">Номер заказа:</span>
+              <span className="detail-value order-number">{orderData.orderNumber}</span>
+            </div>
+            
+            <div className="order-detail-divider"></div>
+            
+            <div className="order-detail-row">
+              <span className="detail-label">Товары:</span>
+              <span className="detail-value">{orderData.subtotal.toLocaleString()} ₽</span>
+            </div>
+            
+            <div className="order-detail-row">
+              <span className="detail-label">Доставка:</span>
+              <span className="detail-value" style={{ color: orderData.delivery === 0 ? '#4caf50' : '#666' }}>
+                {orderData.delivery === 0 ? 'Бесплатно' : `${orderData.delivery.toLocaleString()} ₽`}
+              </span>
+            </div>
+            
+            <div className="order-detail-total">
+              <span className="detail-label">Итого к оплате:</span>
+              <span className="detail-value total-amount">{orderData.total.toLocaleString()} ₽</span>
+            </div>
+            
+            <div className="order-detail-divider"></div>
+            
+            <div className="order-detail-row address-row">
+              <span className="detail-label">📍 Адрес доставки:</span>
+              <span className="detail-value address-value">{orderData.address}</span>
+            </div>
+          </div>
+          
+          <div className="success-thanks">
+            <p>Спасибо за покупку! 🎉</p>
+            <p className="thanks-subtitle">Мы свяжемся с вами в ближайшее время для подтверждения заказа.</p>
+          </div>
+          
+          <div className="success-actions">
+            <button className="success-btn primary" onClick={onClose}>
+              Продолжить покупки
+            </button>
+            <button className="success-btn secondary" onClick={() => {
+              onClose();
+              navigate('/my-orders');
+            }}>
+              Мои заказы
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
     
@@ -229,12 +366,46 @@ const Cart = () => {
     
     try {
       const selectedItemsList = getSelectedItems();
+      const subtotalPrice = getSelectedTotalPrice();
+      const deliveryPrice = getDeliveryPrice();
+      const totalPrice = subtotalPrice + deliveryPrice;
+      
+      let updatedUser = user;
+      if (!user.address && deliveryAddressFull.trim()) {
+        try {
+          const updateUserResponse = await fetch('http://localhost/StoryForge/api/update_profile.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              user_id: user.id,
+              name: user.name,
+              email: user.email,
+              phone: user.phone,
+              address: deliveryAddressFull.trim(),
+              photo: user.photo || null
+            }),
+          });
+          
+          const updateUserData = await updateUserResponse.json();
+          
+          if (updateUserData.success) {
+            updateUser(updateUserData.user);
+            updatedUser = updateUserData.user;
+          }
+        } catch (updateError) {
+          console.error('Ошибка при обновлении профиля:', updateError);
+        }
+      }
       
       const orderData = {
-        user_id: user.id,
+        user_id: updatedUser.id,
         delivery_address: deliveryAddressFull,
         payment_method: paymentMethod,
-        total_price: getSelectedTotalPrice(),
+        subtotal_price: subtotalPrice,
+        delivery_price: deliveryPrice,
+        total_price: totalPrice,
         items: selectedItemsList.map(item => ({
           id: item.id,
           name: item.name,
@@ -254,19 +425,27 @@ const Cart = () => {
       const result = await response.json();
       
       if (result.success) {
-        // Удаляем только выбранные товары из корзины
         for (const item of selectedItemsList) {
           await removeFromCart(item.id);
         }
         
-        // Очищаем выбранные товары
         setSelectedItems(new Set());
         
-        alert(`Заказ №${result.order_number} успешно оформлен! Спасибо за покупку!`);
+        // Устанавливаем данные для успешного модального окна
+        setOrderSuccessData({
+          orderNumber: result.order_number,
+          subtotal: subtotalPrice,
+          delivery: deliveryPrice,
+          total: totalPrice,
+          address: deliveryAddressFull
+        });
+        
+        // Закрываем платежное модальное окно
         setShowPaymentModal(false);
+        // Открываем модальное окно успеха
+        setShowSuccessModal(true);
+        
         resetPaymentForm();
-        // Перенаправляем на страницу заказов
-        navigate('/my-orders', { state: { newOrderNumber: result.order_number } });
       } else {
         alert('Ошибка: ' + result.message);
       }
@@ -320,20 +499,65 @@ const Cart = () => {
   };
 
   const totalPrice = cartItems.reduce((total, item) => {
-    const price = parseInt(item.price.replace(/[^0-9.-]+/g, ''));
+    const price = parseInt(item.price?.replace(/[^0-9.-]+/g, '') || '0');
     return total + (price * item.quantity);
   }, 0);
 
   const selectedTotalPrice = getSelectedTotalPrice();
+  const deliveryPrice = getDeliveryPrice();
+  const totalWithDelivery = getTotalWithDelivery();
+
+  // Текст для отображения стоимости доставки
+  const getDeliveryText = () => {
+    if (deliveryPrice === 0) {
+      return { text: 'Бесплатно', class: 'free-delivery' };
+    }
+    return { text: `${deliveryPrice.toLocaleString()} ₽`, class: '' };
+  };
+
+  const deliveryInfo = getDeliveryText();
+
+  // Находим имя товара для удаления
+  const itemToRemoveName = itemToRemove 
+    ? cartItems.find(item => item.id === itemToRemove)?.name || 'товар'
+    : '';
 
   return (
     <div className="cart">
+      <ConfirmDialog
+        isOpen={showClearCartConfirm}
+        onClose={() => setShowClearCartConfirm(false)}
+        onConfirm={handleClearCart}
+        title="Очистка корзины"
+        message="Вы действительно хотите удалить все товары из корзины? Это действие нельзя отменить."
+        confirmText="Да, очистить"
+        cancelText="Отмена"
+      />
+      
+      <ConfirmDialog
+        isOpen={showRemoveItemConfirm}
+        onClose={() => {
+          setShowRemoveItemConfirm(false);
+          setItemToRemove(null);
+        }}
+        onConfirm={handleRemoveFromCart}
+        title="Удаление товара"
+        message={`Вы действительно хотите удалить "${itemToRemoveName}" из корзины?`}
+        confirmText="Да, удалить"
+        cancelText="Отмена"
+      />
+      
+      <SuccessModal 
+        isOpen={showSuccessModal} 
+        onClose={() => setShowSuccessModal(false)} 
+        orderData={orderSuccessData}
+      />
+      
       <h2>Корзина</h2>
       {cartItems.length === 0 ? (
         <p className="empty-cart-message">🛒 В корзине пока пусто.</p>
       ) : (
         <div>
-          {/* Панель управления выделением */}
           <div className="cart-selection-controls">
             <div className="selection-buttons">
               <button 
@@ -348,6 +572,12 @@ const Cart = () => {
               >
                 Снять все
               </button>
+              <button 
+                className="selection-btn clear-cart-btn"
+                onClick={confirmClearCart}
+              >
+                Очистить корзину
+              </button>
             </div>
             <div className="selection-info">
               Выбрано: {selectedItems.size} / {cartItems.length} товаров
@@ -356,7 +586,6 @@ const Cart = () => {
 
           {cartItems.map(item => (
             <div key={item.id} className="cart-item">
-              {/* Чекбокс для выбора товара */}
               <div className="cart-item-checkbox">
                 <input
                   type="checkbox"
@@ -368,21 +597,21 @@ const Cart = () => {
               
               <ProductImage 
                 src={item.imageUrl} 
-                alt={item.name} 
+                alt={item.name || 'Товар'} 
                 className="cart-item-image" 
                 placeholder={NO_IMAGE_URL}
               />
               <div className="cart-item-details">
-                <h3>{item.name}</h3>
+                <h3>{item.name || 'Товар'}</h3>
                 <p className="cart-item-description">{item.description || 'Описание отсутствует'}</p>
-                <p className="cart-item-price">{item.price}</p>
+                <p className="cart-item-price">{item.price || '0 ₽'}</p>
                 <div className="quantity-control">
                   <button onClick={() => updateCartItemQuantity(item.id, Math.max(item.quantity - 1, 1))}>-</button>
                   <span>{item.quantity}</span>
                   <button onClick={() => updateCartItemQuantity(item.id, item.quantity + 1)}>+</button>
                 </div>
               </div>
-              <button className="remove-button" onClick={() => handleRemoveFromCart(item.id)}>✕</button>
+              <button className="remove-button" onClick={() => confirmRemoveItem(item.id)}>✕</button>
             </div>
           ))}
           
@@ -390,7 +619,7 @@ const Cart = () => {
             <h3>Итого: {totalPrice.toLocaleString()} ₽</h3>
             {selectedTotalPrice !== totalPrice && (
               <h3 className="selected-total">
-                Сумма выбранных: {selectedTotalPrice.toLocaleString()} ₽
+                Сумма выбранных товаров: {selectedTotalPrice.toLocaleString()} ₽
               </h3>
             )}
           </div>
@@ -400,14 +629,13 @@ const Cart = () => {
             onClick={handleBuyClick}
             disabled={selectedItems.size === 0}
           >
-            {!user ? '🚪 Войдите для оформления заказа' : 
+            {!user ? 'Войдите для оформления заказа' : 
              selectedItems.size === 0 ? 'Выберите товары для заказа' : 
              `Оформить заказ (${selectedItems.size})`}
           </button>
         </div>
       )}
 
-      {/* Модальное окно оплаты */}
       {showPaymentModal && user && (
         <div className="modal-overlay" onClick={closeModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -421,23 +649,40 @@ const Cart = () => {
               <p><strong>Телефон:</strong> {user.phone}</p>
             </div>
             
-            {/* Список выбранных товаров в модальном окне */}
             <div className="selected-items-summary">
               <h3>Выбранные товары:</h3>
               {getSelectedItems().map(item => (
                 <div key={item.id} className="selected-item-row">
-                  <span>{item.name}</span>
-                  <span>x{item.quantity}</span>
-                  <span>{parseInt(item.price.replace(/[^0-9.-]+/g, '')).toLocaleString()} ₽</span>
+                  <span>{item.name} x{item.quantity}</span>
+                  <span>{parseInt(item.price?.replace(/[^0-9.-]+/g, '') || '0').toLocaleString()}₽</span>
                 </div>
               ))}
+              
+              <div className="delivery-row" style={{fontWeight: '700', fontSize: '16px'}}>
+                <span>Доставка:</span>
+                <span className={deliveryInfo.class} style={{ color: '#4caf50' }}>
+                  {deliveryInfo.text}
+                </span>
+              </div>
+              
+              {deliveryPrice === 0 && selectedTotalPrice < FREE_DELIVERY_THRESHOLD && (
+                <div className="delivery-notice">
+                  <small>Для бесплатной доставки нужно набрать товаров на {FREE_DELIVERY_THRESHOLD.toLocaleString()} ₽</small>
+                </div>
+              )}
+              
+              {deliveryPrice === REDUCED_DELIVERY_PRICE && (
+                <div className="delivery-notice">
+                  <small>Добавьте товаров на {(FREE_DELIVERY_THRESHOLD - selectedTotalPrice).toLocaleString()} ₽ и получите бесплатную доставку!</small>
+                </div>
+              )}
+              
               <div className="selected-total-summary">
-                Итого: {selectedTotalPrice.toLocaleString()} ₽
+                Итого к оплате: {totalWithDelivery.toLocaleString()} ₽
               </div>
             </div>
             
             <form onSubmit={handlePaymentSubmit}>
-              {/* Блок ввода адреса */}
               <div className="address-section">
                 <label className="section-label">📍 Адрес доставки *</label>
                 
@@ -470,6 +715,12 @@ const Cart = () => {
                     >
                       Использовать сохраненный адрес
                     </button>
+                  )}
+                  
+                  {!user?.address && (
+                    <div className="address-hint-save" style={{ marginTop: '10px', fontSize: '12px', color: '#666' }}>
+                      <small>💡 Адрес будет сохранён в ваш профиль для следующих заказов</small>
+                    </div>
                   )}
                 </div>
               </div>
@@ -570,7 +821,7 @@ const Cart = () => {
               )}
 
               <button type="submit" className="confirm-payment-btn" disabled={loading}>
-                {loading ? 'Оформление...' : `Подтвердить заказ на ${selectedTotalPrice.toLocaleString()} ₽`}
+                {loading ? 'Оформление...' : `Подтвердить заказ на ${totalWithDelivery.toLocaleString()} ₽`}
               </button>
             </form>
           </div>

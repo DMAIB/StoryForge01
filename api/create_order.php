@@ -27,16 +27,18 @@ try {
     // Генерируем уникальный номер заказа
     $order_number = 'ORD-' . date('Ymd') . '-' . uniqid();
     
-    // Вставляем заказ
+    // Вставляем заказ - ДОБАВЛЕНЫ subtotal_price и delivery_price
     $stmt = $pdo->prepare("
-        INSERT INTO orders (user_id, order_number, total_price, delivery_address, payment_method, status) 
-        VALUES (?, ?, ?, ?, ?, 'pending')
+        INSERT INTO orders (user_id, order_number, total_price, subtotal_price, delivery_price, delivery_address, payment_method, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'pending')
     ");
     
     $stmt->execute([
         $data['user_id'],
         $order_number,
         $data['total_price'],
+        $data['subtotal_price'],      // добавлено
+        $data['delivery_price'],      // добавлено
         $data['delivery_address'],
         $data['payment_method']
     ]);
@@ -61,11 +63,10 @@ try {
             $product_price = $product['price'];
             $product_id = $product['id'];
         } else {
-            // Товара нет в БД - используем данные из корзины, НО вставляем product_id = NULL
-            // или создаем временный товар
+            // Товара нет в БД - используем данные из корзины
             $product_name = $item['name'];
             $product_price = $item['price'];
-            $product_id = null; // Временно ставим NULL
+            $product_id = null;
         }
         
         $stmt->execute([

@@ -10,7 +10,8 @@ const ProductEditModal = ({ product, isOpen, onClose, onSave }) => {
     name: '',
     price: '',
     description: '',
-    imageUrl: ''
+    imageUrl: '',
+    imageFile: null
   });
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef(null);
@@ -22,7 +23,8 @@ const ProductEditModal = ({ product, isOpen, onClose, onSave }) => {
         name: product.name,
         price: product.price.replace(' ₽', ''),
         description: product.description || '',
-        imageUrl: product.imageUrl
+        imageUrl: product.imageUrl,
+        imageFile: null
       });
     }
   }, [product]);
@@ -50,7 +52,18 @@ const ProductEditModal = ({ product, isOpen, onClose, onSave }) => {
     }
   };
 
-  const handleFileSelect = async (e) => {
+  const deleteOldImage = async (imageUrl) => {
+    try {
+      const filename = imageUrl.split('/').pop();
+      await fetch(`http://localhost:5000/api/upload/${filename}`, {
+        method: 'DELETE',
+      });
+    } catch (error) {
+      console.error('Ошибка при удалении старого изображения:', error);
+    }
+  };
+
+  const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -64,12 +77,14 @@ const ProductEditModal = ({ product, isOpen, onClose, onSave }) => {
       return;
     }
 
-    setUploading(true);
-    const imageUrl = await uploadImage(file);
-    if (imageUrl) {
-      setEditedProduct({ ...editedProduct, imageUrl });
-    }
-    setUploading(false);
+    const localPreviewUrl = URL.createObjectURL(file);
+    
+    setEditedProduct({ 
+      ...editedProduct, 
+      imageFile: file,
+      imageUrl: localPreviewUrl
+    });
+    
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -93,18 +108,60 @@ const ProductEditModal = ({ product, isOpen, onClose, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!editedProduct.name || !editedProduct.price || !editedProduct.imageUrl) {
-      alert("Пожалуйста, заполните все поля и добавьте изображение.");
+    if (!editedProduct.name || !editedProduct.price) {
+      alert("Пожалуйста, заполните все поля.");
       return;
     }
 
-    await onSave({ 
-      ...editedProduct, 
-      id: product.id,
-      price: `${editedProduct.price} ₽`
-    });
+    if (!editedProduct.imageUrl) {
+      alert("Пожалуйста, добавьте изображение (загрузите файл или укажите URL)");
+      return;
+    }
+
+    // Если есть новый файл для загрузки, загружаем его
+    if (editedProduct.imageFile) {
+      setUploading(true);
+      const uploadedImageUrl = await uploadImage(editedProduct.imageFile);
+      setUploading(false);
+      
+      if (!uploadedImageUrl) {
+        alert("Не удалось загрузить изображение");
+        return;
+      }
+      
+      // Если у товара было старое изображение и оно с сервера, удаляем его
+      if (product && product.imageUrl && product.imageUrl.includes('/uploads/') && product.imageUrl !== uploadedImageUrl) {
+        await deleteOldImage(product.imageUrl);
+      }
+      
+      await onSave({ 
+        ...editedProduct, 
+        id: product.id,
+        price: `${editedProduct.price} ₽`,
+        imageUrl: uploadedImageUrl
+      });
+    } else {
+      // Используем URL (либо новый, либо старый)
+      await onSave({ 
+        ...editedProduct, 
+        id: product.id,
+        price: `${editedProduct.price} ₽`,
+        imageUrl: editedProduct.imageUrl
+      });
+    }
+    
     onClose();
   };
+
+  const cleanupPreview = () => {
+    if (editedProduct.imageUrl && editedProduct.imageUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(editedProduct.imageUrl);
+    }
+  };
+
+  useEffect(() => {
+    return cleanupPreview;
+  }, [editedProduct.imageUrl]);
 
   if (!isOpen) return null;
 
@@ -176,7 +233,10 @@ const ProductEditModal = ({ product, isOpen, onClose, onSave }) => {
                 />
                 <button
                   type="button"
-                  onClick={() => setEditedProduct({ ...editedProduct, imageUrl: '' })}
+                  onClick={() => {
+                    cleanupPreview();
+                    setEditedProduct({ ...editedProduct, imageUrl: '', imageFile: null });
+                  }}
                   className="admin-modal-remove-img"
                 >
                   ×
@@ -188,14 +248,21 @@ const ProductEditModal = ({ product, isOpen, onClose, onSave }) => {
           <input
             type="text"
             name="imageUrl"
-            placeholder="Или URL изображения"
-            value={editedProduct.imageUrl}
-            onChange={handleChange}
+            placeholder="Или введите URL изображения"
+            value={editedProduct.imageUrl && !editedProduct.imageUrl.startsWith('blob:') ? editedProduct.imageUrl : ''}
+            onChange={(e) => {
+              // Если пользователь вводит URL вручную, очищаем файл
+              setEditedProduct({ 
+                ...editedProduct, 
+                imageUrl: e.target.value,
+                imageFile: null 
+              });
+            }}
           />
           
           <div className="admin-modal-buttons">
             <button type="submit" disabled={uploading}>
-              Сохранить
+              {uploading ? 'Сохранение...' : 'Сохранить'}
             </button>
             <button type="button" onClick={onClose} className="admin-modal-cancel">
               Отмена
@@ -215,7 +282,8 @@ const AdminPanel = () => {
     name: '',
     price: '',
     description: '',
-    imageUrl: ''
+    imageUrl: '',
+    imageFile: null
   });
   const [uploading, setUploading] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
@@ -229,7 +297,7 @@ const AdminPanel = () => {
 
   const NO_IMAGE_URL = '/images/no-image.png';
 
-  // useEffect для отслеживания прокрутки
+  // Все хуки useEffect должны быть до любого условного возврата
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 300) {
@@ -243,19 +311,16 @@ const AdminPanel = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Функция прокрутки наверх
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
-  };
+  // Очищаем временные URL при размонтировании
+  useEffect(() => {
+    return () => {
+      if (newProduct.imageUrl && newProduct.imageUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(newProduct.imageUrl);
+      }
+    };
+  }, [newProduct.imageUrl]);
 
-  const showNotification = (message, type = 'success') => {
-    setNotification({ message, type });
-    setTimeout(() => setNotification(null), 3000);
-  };
-
+  // Проверка прав администратора (после всех хуков)
   if (!user || user.role !== 'admin') {
     return (
       <div className="admin-panel-container">
@@ -267,6 +332,18 @@ const AdminPanel = () => {
       </div>
     );
   }
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   const uploadImage = async (file) => {
     const formData = new FormData();
@@ -291,7 +368,21 @@ const AdminPanel = () => {
     }
   };
 
-  const handleFileSelect = async (e) => {
+  const deleteImage = async (imageUrl) => {
+    // Удаляем только изображения с нашего сервера
+    if (!imageUrl || !imageUrl.includes('/uploads/')) return;
+    
+    try {
+      const filename = imageUrl.split('/').pop();
+      await fetch(`http://localhost:5000/api/upload/${filename}`, {
+        method: 'DELETE',
+      });
+    } catch (error) {
+      console.error('Ошибка при удалении изображения:', error);
+    }
+  };
+
+  const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
@@ -305,16 +396,14 @@ const AdminPanel = () => {
       return;
     }
 
-    setUploading(true);
-    const imageUrl = await uploadImage(file);
-    if (imageUrl) {
-      setNewProduct({
-        ...newProduct,
-        imageUrl: imageUrl
-      });
-      showNotification('Изображение загружено', 'success');
-    }
-    setUploading(false);
+    const localPreviewUrl = URL.createObjectURL(file);
+    
+    setNewProduct({
+      ...newProduct,
+      imageFile: file,
+      imageUrl: localPreviewUrl
+    });
+    
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -338,17 +427,46 @@ const AdminPanel = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!newProduct.name || !newProduct.price || !newProduct.imageUrl) {
-      showNotification("Пожалуйста, заполните все поля и загрузите изображение.", 'error');
+    if (!newProduct.name || !newProduct.price) {
+      showNotification("Пожалуйста, заполните все поля.", 'error');
       return;
     }
 
+    if (!newProduct.imageUrl) {
+      showNotification("Пожалуйста, добавьте изображение (загрузите файл или укажите URL)", 'error');
+      return;
+    }
+
+    setUploading(true);
+    
+    let finalImageUrl = newProduct.imageUrl;
+    
+    // Если есть файл для загрузки, загружаем его
+    if (newProduct.imageFile) {
+      const uploadedImageUrl = await uploadImage(newProduct.imageFile);
+      if (!uploadedImageUrl) {
+        setUploading(false);
+        showNotification("Не удалось загрузить изображение", 'error');
+        return;
+      }
+      finalImageUrl = uploadedImageUrl;
+    }
+    
     await addProduct({
-      ...newProduct,
-      price: `${newProduct.price} ₽`
+      name: newProduct.name,
+      price: `${newProduct.price} ₽`,
+      description: newProduct.description,
+      imageUrl: finalImageUrl
     });
+    
+    // Очищаем временный URL
+    if (newProduct.imageUrl && newProduct.imageUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(newProduct.imageUrl);
+    }
+    
     showNotification(`Товар "${newProduct.name}" добавлен`, 'success');
-    setNewProduct({ name: '', price: '', description: '', imageUrl: '' });
+    setNewProduct({ name: '', price: '', description: '', imageUrl: '', imageFile: null });
+    setUploading(false);
   };
 
   const handleEdit = (product) => {
@@ -361,8 +479,9 @@ const AdminPanel = () => {
     showNotification(`Товар "${updatedProduct.name}" обновлен`, 'success');
   };
 
-  const handleDelete = (productId, productName) => {
+  const handleDelete = async (productId, productName, imageUrl) => {
     if (window.confirm(`Вы уверены, что хотите удалить "${productName}"?`)) {
+      await deleteImage(imageUrl);
       removeProduct(productId);
       showNotification(`Товар "${productName}" удален`, 'success');
     }
@@ -477,7 +596,12 @@ const AdminPanel = () => {
                 />
                 <button
                   type="button"
-                  onClick={() => setNewProduct({ ...newProduct, imageUrl: '' })}
+                  onClick={() => {
+                    if (newProduct.imageUrl && newProduct.imageUrl.startsWith('blob:')) {
+                      URL.revokeObjectURL(newProduct.imageUrl);
+                    }
+                    setNewProduct({ ...newProduct, imageUrl: '', imageFile: null });
+                  }}
                   className="admin-remove-image"
                 >
                   ×
@@ -489,13 +613,20 @@ const AdminPanel = () => {
           <input
             type="text"
             name="imageUrl"
-            placeholder="Или URL изображения"
-            value={newProduct.imageUrl}
-            onChange={handleChange}
+            placeholder="Или введите URL изображения"
+            value={newProduct.imageUrl && !newProduct.imageUrl.startsWith('blob:') ? newProduct.imageUrl : ''}
+            onChange={(e) => {
+              // Если пользователь вводит URL вручную, очищаем файл
+              setNewProduct({ 
+                ...newProduct, 
+                imageUrl: e.target.value,
+                imageFile: null 
+              });
+            }}
           />
           
           <button type="submit" disabled={uploading}>
-            Добавить продукт
+            {uploading ? 'Добавление...' : 'Добавить продукт'}
           </button>
         </form>
       </div>
@@ -563,7 +694,7 @@ const AdminPanel = () => {
                     <button className="admin-edit-button" onClick={() => handleEdit(product)}>
                       Редактировать
                     </button>
-                    <button className="admin-delete-button" onClick={() => handleDelete(product.id, product.name)}>
+                    <button className="admin-delete-button" onClick={() => handleDelete(product.id, product.name, product.imageUrl)}>
                       Удалить
                     </button>
                   </div>
@@ -588,10 +719,9 @@ const AdminPanel = () => {
         onSave={handleSaveEdit}
       />
 
-      {/* Кнопка "Наверх" */}
       {showScrollTop && (
         <button className="scroll-to-top" onClick={scrollToTop}>
-        Наверх
+          Наверх
         </button>
       )}
     </div>

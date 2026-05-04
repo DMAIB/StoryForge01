@@ -17,6 +17,23 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
   position: sticky;
   top: 80px;
+  max-height: calc(100vh - 100px);
+  overflow-y: auto;
+}
+
+/* Стилизация скроллбара для админ-панели */
+.admin-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.admin-panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.admin-panel::-webkit-scrollbar-thumb {
+  background: #ffc700;
+  border-radius: 3px;
 }
 
 .admin-panel h2 {
@@ -128,15 +145,19 @@
   position: relative;
   margin-top: 10px;
   display: inline-block;
+  max-width: 100%;
 }
 
 .admin-image-preview img {
-  max-width: 200px;
-  max-height: 200px;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 150px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   border-radius: 4px;
   border: 1px solid #ddd;
   padding: 5px;
+  background-color: #f9f9f9;
 }
 
 .admin-remove-image {
@@ -528,15 +549,19 @@
   position: relative;
   margin-top: 10px;
   display: inline-block;
+  max-width: 100%;
 }
 
 .admin-modal-image-preview img {
   max-width: 100%;
   max-height: 150px;
-  object-fit: cover;
+  width: auto;
+  height: auto;
+  object-fit: contain;
   border-radius: 6px;
   border: 1px solid #ddd;
   padding: 4px;
+  background-color: #f9f9f9;
 }
 
 .admin-modal-remove-img {
@@ -596,21 +621,21 @@
 
 /* Уведомления */
 .admin-notification {
-    position: fixed;
-    top: 80px;
-    right: 20px;
-    background: linear-gradient(135deg, #529ec7, #98b84c);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    z-index: 1001;
-    animation: slideInRight 0.3s ease-out;
-    font-weight: 500;
-    top: 100px;
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  background: linear-gradient(135deg, #529ec7, #98b84c);
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  animation: slideInRight 0.3s ease-out;
+  font-weight: 500;
+  top: 100px;
 }
 
 .admin-notification.success {
@@ -621,6 +646,7 @@
   background-color: #f44336;
 }
 
+
 /* Адаптация для мобильных */
 @media (max-width: 768px) {
   .admin-panel-container {
@@ -630,6 +656,8 @@
   .admin-panel {
     max-width: 100%;
     position: static;
+    max-height: none;
+    overflow-y: visible;
   }
   
   .admin-product-list {
@@ -671,4 +699,5 @@
     left: 10px;
     text-align: center;
   }
+
 }

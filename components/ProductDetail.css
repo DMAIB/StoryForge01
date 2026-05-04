@@ -663,3 +663,49 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Стили для блока отзывов */
+.reviews-content {
+  padding: 20px;
+  min-height: 300px;
+}
+
+.no-reviews-message {
+  text-align: center;
+  padding: 60px 20px;
+  background: #f9f9f9;
+  border-radius: 12px;
+}
+
+.no-reviews-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.6;
+}
+
+.no-reviews-message h3 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.no-reviews-message p {
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 24px;
+}
+
+.write-review-btn {
+  background: #ffc700;
+  color: white;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.write-review-btn:hover {
+  background: #daaf06;
+}

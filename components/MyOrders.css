@@ -34,7 +34,7 @@
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
 
-/* Заголовок заказа (кликабельный) */
+/* Заголовок заказа */
 .order-header {
   display: flex;
   justify-content: space-between;
@@ -113,7 +113,6 @@
 .expand-icon {
   font-size: 0.9rem;
   color: #999;
-  transition: transform 0.2s ease;
 }
 
 /* Детали заказа */
@@ -123,29 +122,52 @@
   background: white;
 }
 
-.delivery-info,
-.payment-info {
+/* Объединенный блок доставки и оплаты */
+.delivery-payment-block {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
   margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
-.delivery-info h4,
-.payment-info h4,
-.order-items h4 {
-  font-size: 1rem;
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.info-icon {
+  font-size: 1.2rem;
+  width: 30px;
+}
+
+.info-label {
+  font-weight: 600;
   color: #555;
-  margin-bottom: 0.5rem;
+  min-width: 140px;
+  font-size: 0.9rem;
 }
 
-.delivery-info p,
-.payment-info p {
-  color: #666;
-  line-height: 1.5;
-  text-align: start;
+.info-value {
+  color: #333;
+  flex: 1;
+  line-height: 1.4;
 }
 
 /* Таблица товаров */
 .order-items {
   margin-top: 1rem;
+  overflow-x: auto;
+}
+
+.order-items h4 {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 0.5rem;
 }
 
 .items-table {
@@ -156,8 +178,7 @@
 
 .items-table th,
 .items-table td {
-  padding: 0.75rem;
-  text-align: left;
+  padding: 12px 8px;
   border-bottom: 1px solid #eee;
 }
 
@@ -169,29 +190,94 @@
 }
 
 .items-table td {
-  color: #666;
+  color: #333;
 }
 
-.items-table tfoot tr {
+/* Фиксированная ширина колонок */
+.items-table th:first-child,
+.items-table td:first-child {
+  width: 45%;
+  text-align: left;
+}
+
+.items-table th:nth-child(2),
+.items-table td:nth-child(2) {
+  width: 20%;
+  text-align: right;
+}
+
+.items-table th:nth-child(3),
+.items-table td:nth-child(3) {
+  width: 15%;
+  text-align: right;
+}
+
+.items-table th:last-child,
+.items-table td:last-child {
+  width: 20%;
+  text-align: right;
+}
+
+/* Стили для ячеек */
+.product-name {
+  text-align: left;
+}
+
+.price-cell,
+.quantity-cell,
+.total-cell {
+  text-align: right;
+}
+
+/* Строка доставки */
+.delivery-item-row {
   background: #f8f9fa;
+  border-top: 1px solid #e0e0e0;
 }
 
-.items-table tfoot td {
-  padding: 0.75rem;
+.delivery-item-row td {
+  padding: 12px 8px;
+}
+
+.delivery-name {
   font-weight: 600;
-  border-bottom: none;
+  color: #ff6b35;
+  text-align: left;
+}
+
+.delivery-price-cell,
+.delivery-quantity,
+.delivery-total {
+  text-align: right;
+}
+
+.delivery-total {
+  font-weight: 600;
+  color: #ff6b35;
+}
+
+/* Итоговая строка */
+.total-row {
+  background: #fafafa;
+  border-top: 2px solid #e0e0e0;
+}
+
+.total-row td {
+  padding: 12px 8px;
 }
 
 .total-label {
-  text-align: right;
   font-weight: 600;
   color: #333;
+  text-align: right;
+  font-size: 1rem;
 }
 
 .total-value {
   font-weight: 700;
   font-size: 1.1rem;
   color: #2c3e50;
+  text-align: right;
 }
 
 /* Пустое состояние */
@@ -248,40 +334,12 @@
   text-decoration: underline;
 }
 
-/* Загрузка */
+/* Загрузка и ошибки */
 .loading-spinner {
   text-align: center;
   padding: 3rem;
   color: #888;
   font-size: 1.1rem;
-}
-
-/* Адаптивность */
-@media (max-width: 768px) {
-  .order-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .order-summary {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .order-info {
-    width: 100%;
-  }
-
-  .items-table th,
-  .items-table td {
-    padding: 0.5rem;
-    font-size: 0.85rem;
-  }
-
-  .order-total {
-    font-size: 1rem;
-  }
 }
 
 .error-message {
@@ -305,4 +363,259 @@
 
 .retry-btn:hover {
   background: #357abd;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .order-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .order-summary {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .order-info {
+    width: 100%;
+  }
+
+  .items-table th,
+  .items-table td {
+    padding: 8px 4px;
+    font-size: 0.8rem;
+  }
+
+  .order-total {
+    font-size: 1rem;
+  }
+  
+  /* Адаптивность для блока доставки */
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .info-label {
+    min-width: auto;
+  }
+}
+
+/* Минималистичная кнопка отмены */
+.cancel-order-btn {
+    background: #fff;
+    color: #dc3545;
+    border: 2px solid #dc3545;
+    padding: 10px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.cancel-order-btn:hover:not(:disabled) {
+    background: #dc3545;
+    color: white;
+    transform: scale(1.02);
+}
+
+.cancel-order-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.cancel-info {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 8px;
+}
+
+/* Модальное окно отмены заказа - точное соответствие вашим классам в JSX */
+.cancel-order-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.cancel-order-modal-content {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.cancel-order-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.cancel-order-modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #dc3545;
+}
+
+.cancel-order-modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #999;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.cancel-order-modal-close:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.cancel-order-modal-body {
+  padding: 24px;
+}
+
+.cancel-order-warning-icon {
+  text-align: center;
+  font-size: 56px;
+  margin-bottom: 16px;
+}
+
+.cancel-order-confirmation-text {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #333;
+}
+
+.cancel-order-confirmation-text strong {
+  color: #dc3545;
+}
+
+.cancel-order-summary {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.cancel-order-summary-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.cancel-order-summary-item:last-child {
+  border-bottom: none;
+}
+
+.cancel-order-summary-label {
+  color: #666;
+  font-weight: 500;
+}
+
+.cancel-order-summary-value {
+  color: #333;
+  font-weight: 600;
+}
+
+.cancel-order-refund-info {
+  background: #e3f2fd;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  border-left: 3px solid #2196f3;
+}
+
+.cancel-order-refund-info p {
+  margin: 0 0 5px 0;
+}
+
+.cancel-order-refund-info p:last-child {
+  margin-bottom: 0;
+}
+
+.cancel-order-modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.cancel-order-btn-secondary {
+  background: #e9ecef;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.cancel-order-btn-secondary:hover {
+  background: #dee2e6;
+}
+
+.cancel-order-btn-danger {
+  background: #dc3545;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+}
+
+.cancel-order-btn-danger:hover {
+  background: #c82333;
+}
+
+@media (max-width: 600px) {
+  .cancel-order-modal-content {
+    width: 95%;
+    margin: 10px;
+  }
+  
+  .cancel-order-modal-buttons {
+    flex-direction: column;
+  }
+  
+  .cancel-order-btn-secondary,
+  .cancel-order-btn-danger {
+    width: 100%;
+  }
+  
+  .cancel-order-modal-header {
+    padding: 16px 20px;
+  }
+  
+  .cancel-order-modal-body {
+    padding: 20px;
+  }
 }

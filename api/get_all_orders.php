@@ -24,6 +24,14 @@ try {
         $itemsStmt = $pdo->prepare($itemsQuery);
         $itemsStmt->execute([$order['id']]);
         $order['items'] = $itemsStmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Добавляем поля subtotal_price и delivery_price, если их нет
+        if (!isset($order['subtotal_price'])) {
+            $order['subtotal_price'] = $order['total_price'];
+        }
+        if (!isset($order['delivery_price'])) {
+            $order['delivery_price'] = 0;
+        }
     }
     
     echo json_encode([

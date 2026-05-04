@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 
 export const UserContext = createContext();
 
@@ -6,37 +6,47 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // При загрузке приложения проверяем localStorage
+  // Проверяем, есть ли сохраненный пользователь при загрузке
   useEffect(() => {
     const savedUser = localStorage.getItem('user');
     if (savedUser) {
-      const userData = JSON.parse(savedUser);
-      setUser(userData);
-      setIsLoggedIn(true);
+      try {
+        const userData = JSON.parse(savedUser);
+        setUser(userData);
+        setIsLoggedIn(true);
+      } catch (error) {
+        console.error('Ошибка при загрузке пользователя:', error);
+        localStorage.removeItem('user');
+      }
     }
   }, []);
 
   const login = (userData) => {
     setUser(userData);
     setIsLoggedIn(true);
-    localStorage.setItem('user', JSON.stringify(userData)); // Сохраняем
+    localStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = () => {
     setUser(null);
     setIsLoggedIn(false);
-    localStorage.removeItem('user'); // Очищаем
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
-  // Новая функция для обновления данных пользователя
-  const updateUser = (updatedData) => {
-    const updatedUser = { ...user, ...updatedData };
-    setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+  const updateUser = (updatedUserData) => {
+    setUser(updatedUserData);
+    localStorage.setItem('user', JSON.stringify(updatedUserData));
   };
 
   return (
-    <UserContext.Provider value={{ user, isLoggedIn, login, logout, updateUser }}>
+    <UserContext.Provider value={{ 
+      user, 
+      isLoggedIn, 
+      login, 
+      logout, 
+      updateUser 
+    }}>
       {children}
     </UserContext.Provider>
   );

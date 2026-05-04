@@ -33,7 +33,7 @@ const Login = () => {
         
         // Перенаправляем по роли
         if (user.role === 'admin') {
-          navigate('/admin');
+          navigate('/admin/orders');
         } else {
           navigate('/products');
         }
